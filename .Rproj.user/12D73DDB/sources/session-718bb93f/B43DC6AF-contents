@@ -1,0 +1,522 @@
+---
+title: "Visualizations"
+description: |
+  I made three data visualizations and documented the evolution of them here. 
+author:
+  - name: W. Jamie Yang
+    affiliation: University of Oregon
+date: 03-21-2024
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+
+# Learn more about creating blogs with Distill at:
+# https://rstudio.github.io/distill/blog.html
+
+```
+
+# Import data
+
+```{r}
+#| label: load basic packages
+library(tidyverse)
+library(here)
+library(rio)
+library(janitor)
+library(vcd)
+library(ggtext)
+```
+
+```{r}
+#| label: import data
+data <- import(here("orgasmanalysis.dta")) 
+
+# view(data)
+# head(data)
+```
+
+```{r}
+data <- data %>% 
+  select(stratum, individual, id,
+         gender, race, sexual_orientation, mothers_education_r, immigrant, trans, famstructure,
+         grade, 
+         greek, physattr, numpartners, num_partners,
+         noorgasm)
+
+# view(data)
+# str(data)
+```
+
+```{r}
+#| label: recode race variable to include 4 categories
+data$race4 <- ifelse(data$race == "White", "White", 
+                         ifelse(data$race == "Black", "Black",
+                                ifelse(data$race == "Mexican American" | data$race == "Puerto Rican" | data$race == "Other Hispanic", "Hispanic", 
+                                       "AIAN")))
+```
+
+# Visualization 1
+
+## Figure 1 previously
+
+```{r}
+#| label: make variables numeric for correlation matrix 
+
+data_numeric <- data %>% 
+  select(gender, race4, sexual_orientation, mothers_education_r, noorgasm)
+
+
+data_numeric$gender <- ifelse(data_numeric$gender == "Male", 1,
+                                  ifelse(data_numeric$gender == "Female", 2,
+                                         ifelse(data_numeric$gender == "MTF", 3,                  
+                                                  ifelse(data_numeric$gender == "FTM", 4, NA))))
+
+data_numeric$race4 <- ifelse(data_numeric$race4 == "White", 1, 
+                                 ifelse(data_numeric$race4 == "Black", 2,
+                                        ifelse(data_numeric$race4 == "Hispanic", 3, 
+                                               ifelse(data_numeric$race4 == "AIAN", 4, NA))))
+
+data_numeric$sexual_orientation <- ifelse(data_numeric$sexual_orientation == "Straight", 1, 
+                                              ifelse(data_numeric$sexual_orientation == "Gay", 2,
+                                                     ifelse(data_numeric$sexual_orientation == "Bisexual", 3,
+                                                        ifelse(data_numeric$sexual_orientation == "Unsure", 4, NA))))
+
+
+data_numeric$mothers_education_r <- ifelse(data_numeric$mothers_education_r == "Graduate degree", 1,
+                                               ifelse(data_numeric$mothers_education_r == "Bachelors degree", 2,
+                                                      ifelse(data_numeric$mothers_education_r == "Some college", 3,
+                                                         ifelse(data_numeric$mothers_education_r == "High school or less", 4, NA))))
+
+data_numeric$noorgasm <- as.numeric(data_numeric$noorgasm)
+```
+
+```{r}
+#| label: generate correlation matrix
+
+require(corrplot)
+
+cor(data_numeric)
+
+cormat <- data_numeric %>% 
+  cor(., use = "pairwise.complete.obs")
+```
+
+```{r}
+#| label: Figure 1 Correlogram visualizing variable relationships 
+ggcorrplot::ggcorrplot(cormat, # correlation matrix
+                 type = "lower", # print the lower part of the correlation matrix
+                 hc.order = TRUE, # hierarchical clustering of correlations,
+                 lab = TRUE) + # add correlation values as labels
+  theme(panel.background = element_rect(fill = "white", color = "white")) +
+  labs(title = "Figure 1: Visualizing Correlation Matrix of Main Variables")
+
+```
+
+Somehow the above code chunk can run but sometimes it doesn't spit out a plot product below the code chunk like usual and doesn't show when I knit the document into a html file. However, from this initial plot, we can see that there exist correlation between these dyads: (1) the race variable and mothers' education (r = 0.2); (2) the race variable and noorgasm (r = 0.16); (3) gender and noorgasm (r = 0.09). This plot meaningfully guides us to further investigate the relationships between gender/race and the outcome variable "noorgasm".
+
+## Figure 1
+
+I received feedback from the class that because my variables of interest are all qualitative variables, therefore, it's inappropriate to use Pearson's correlation coefficient. Instead, I should calculate chi-square and Cramer's V, which is a similar concept but is for categorical variables. I proceed to make a similar heatmap using Cramer's V.
+
+This is the [source](https://rpubs.com/tborges81/cramersv_heatmap) I used to achieve this step.
+
+```{r}
+#| label: build a function that performs the Cramer's V calculations
+
+cramer_v <- function(x, y){
+  cm <- table(x, y)
+  n <- sum(cm)
+  r <- nrow(cm)
+  k <- ncol(cm)
+  
+  chi2 <- chisq.test(cm)$statistic
+  chi2corr <- max(0, chi2 - ( k - 1) * (r - 1) / (n - 1))
+
+  kcorr <- k - (k - 1) ^2/ (n - 1)
+  rcorr <- r - (r - 1) ^2/ (n - 1)
+  
+  return(sqrt(chi2corr / n)/ min(kcorr - 1, rcorr - 1))
+}
+```
+
+```{r message = FALSE, warning = FALSE}
+#| label: calculate Cramer's V for each combination of the categorical variables 
+
+data_factor<- data %>% 
+  select(gender, race4, sexual_orientation, mothers_education_r, noorgasm)
+
+str(data_factor)
+
+data_factor$sexual_orientation <- as.factor(data_factor$sexual_orientation)
+data_factor$mothers_education_r <- as.factor(data_factor$mothers_education_r)
+
+a1 <- cramer_v(data_factor$gender, data_factor$gender)
+a2 <- cramer_v(data_factor$gender, data_factor$race4)
+a3 <- cramer_v(data_factor$gender, data_factor$sexual_orientation)
+a4 <- cramer_v(data_factor$gender, data_factor$mothers_education_r)
+a5 <- cramer_v(data_factor$gender, data_factor$noorgasm)
+
+a6 <- cramer_v(data_factor$race4, data_factor$gender)
+a7 <- cramer_v(data_factor$race4, data_factor$race4)
+a8 <- cramer_v(data_factor$race4, data_factor$sexual_orientation)
+a9 <- cramer_v(data_factor$race4, data_factor$mothers_education_r)
+a10 <- cramer_v(data_factor$race4, data_factor$noorgasm)
+
+a11 <- cramer_v(data_factor$sexual_orientation, data_factor$gender)
+a12 <- cramer_v(data_factor$sexual_orientation, data_factor$race4)
+a13 <- cramer_v(data_factor$sexual_orientation, data_factor$sexual_orientation)
+a14 <- cramer_v(data_factor$sexual_orientation, data_factor$mothers_education_r)
+a15 <- cramer_v(data_factor$sexual_orientation, data_factor$noorgasm)
+
+a16 <- cramer_v(data_factor$mothers_education_r, data_factor$gender)
+a17 <- cramer_v(data_factor$mothers_education_r, data_factor$race4)
+a18 <- cramer_v(data_factor$mothers_education_r, data_factor$sexual_orientation)
+a19 <- cramer_v(data_factor$mothers_education_r, data_factor$mothers_education_r)
+a20 <- cramer_v(data_factor$mothers_education_r, data_factor$noorgasm)
+
+a21 <- cramer_v(data_factor$noorgasm, data_factor$gender)
+a22 <- cramer_v(data_factor$noorgasm, data_factor$race4)
+a23 <- cramer_v(data_factor$noorgasm, data_factor$sexual_orientation)
+a24 <- cramer_v(data_factor$noorgasm, data_factor$mothers_education_r)
+a25 <- cramer_v(data_factor$noorgasm, data_factor$noorgasm)
+```
+
+```{r}
+#| label: create a data frame with the results
+
+data_cramersV <- data.frame(
+ gender = c(a1, a2, a3, a4, a5),
+ race4 = c(a6, a7, a8, a9, a10),
+ sexual_orientation = c(a11, a12, a13, a14, a15),
+ mothers_education_r = c(a16, a17, a18, a19, a20),
+ noorgasm = c(a21, a22, a23, a24, a25)
+)
+```
+
+```{r}
+#| label: prepare data_cramersV for plotting 
+
+# set row names and column names
+rownames(data_cramersV) <- colnames(data_cramersV)
+
+# get the varible names 
+variables <- colnames(data_cramersV)
+
+# create an empty data frame
+cor_df <- data.frame()
+
+# loop to fill the empty data frame
+for(i in 1:length(variables)) {
+  for(j in 1:length(variables)) {
+  row <- data.frame(
+    Variable1 = variables[i],
+    Variable2 = variables[j],
+    Cramers_V = round(data_cramersV[i, j], 2)
+  )
+  cor_df <- rbind(cor_df, row)
+  }
+}
+
+# filter out the diagonal (correlation with itself)
+cor_df <- cor_df[cor_df$Variable1 != cor_df$Variable2, ]
+
+# reset row names
+rownames(cor_df) <- NULL
+
+# print the result data frame
+print(cor_df)
+```
+
+```{r}
+#| label: plot the heatmap for Cramer's V
+cor_df %>% ggplot(aes(x = Variable1,
+                      y = Variable2)) +
+  geom_tile(aes(fill = Cramers_V)) +
+  labs(title = "Figure 1: Degrees of Association of Main Variables Using Cramer's V",
+       subtitle = "Race and Gender are Associated with the Lack of Orgasm Experience",
+       caption = "Source: The Online College Social Life Survey") +
+  theme(panel.background = element_rect(fill = "white", color = "white"),
+        axis.title = element_blank(),
+        legend.title = element_blank(),
+        plot.caption  = element_text(hjust = 0.01, 
+                                     size  = 9,
+                                     margin=margin(t=0))) +
+  scale_fill_gradient(low = "white", 
+                      high = "steelblue")
+
+```
+
+
+# Visualization 2
+
+## Figure 2 previously
+
+```{r}
+#| label: Figure 2.1 Mosaic plot on gender, race and noorgasm 
+
+# gender_noorgasm <- table(vis_data$gender, vis_data$noorgasm)
+
+# split by gender then race
+p2.1 <- mosaic( ~ noorgasm + gender + race4, 
+              data = data,
+              highlighting = "noorgasm",
+              highlighting_fill = c("blue", "grey"),
+              direction = c("v", "v", "h"),
+              main = "Figure 2.1: MTFs, females, and racial minorities are more likely to \n have never experienced orgasms in college sexual encounters"
+) 
+```
+
+```{r}
+#| label: Figure 2.2 Mosaic plot on gender, sexual orientation and noorgasm 
+p2.2 <- mosaic( ~ noorgasm + gender + sexual_orientation,
+              data = data,
+              highlighting = "noorgasm",
+              highlighting_fill = c("orange", "grey"),
+              direction = c("v", "v", "h"),
+              main = "Figure 1.2: Heterosexual individuals are more likely to \n have never experienced orgasms in college sexual encounters")
+```
+
+I have difficulty using `geom_mosaic()` from ggplot2 package to create this mosaic plot; and using the vcd package, I have not figured out how to adjust title text size -- I tried moving to ggplot2 from here to edit the text size, but keep getting a "NULL" response.
+
+## Figure 2
+
+After seeing the clunkiness of the vcd package and taking feedback from classmates, I decided to try using ggplot2 to produce stacked bar charts, instead of the mosaic plots here. I have more confidence making maneuvers in the ggplot2 universe after this term's training and practice.
+
+```{r}
+
+data$gender <- factor(data$gender)
+data$noorgasm <- factor(data$noorgasm)
+data$race4 <- factor(data$race4)
+data$sexual_orientation <- factor(data$sexual_orientation)
+
+data %>% ggplot(aes(x = gender,
+                    fill = race4)) + 
+  geom_bar(aes(y = after_stat(count) * 100 / sum(after_stat(count))),
+           alpha = 1) + 
+  facet_grid(~ noorgasm) + 
+  scale_fill_brewer(palette = "Dark2") +
+  labs(title = "Figure 2.1: **Females** and **Racial Minorities** are more vulnerable to sexual injustices.",
+       caption = "Source: The Online College Social Life Survey",
+       y = "Proportion of Orgasm Experience (%)") +
+  theme(panel.background = element_rect(fill = "white", color = "white"),
+        axis.title.x = element_blank(),
+        panel.grid.major.y = element_line(color = "grey80", linewidth = 0.5, linetype = "dashed"),
+        legend.title = element_blank(),
+        plot.caption  = element_text(hjust = 0.01, 
+                                     size  = 9,
+                                     margin=margin(t=0)),
+        axis.ticks = element_blank(),
+        plot.title = element_markdown(margin = margin(b = 20),
+                                  hjust = -0.075)) 
+```
+
+Inspired by Figure 1, which also substantiates the literature (suggesting that ) I firstly want to check the distribution of respondents who have never experienced orgasm in their college sexual encounters in various race and gender groups. Figure 2.1 tells a clearer story about which racial and gender subgroups stand out.
+
+```{r}
+data %>% ggplot(aes(x = sexual_orientation,
+                    fill = gender)) + 
+  geom_bar(aes(y = after_stat(count) * 100 / sum(after_stat(count))),
+           alpha = 1) + 
+  facet_grid(~ noorgasm) + 
+  scale_fill_brewer(palette = "Dark2") +
+  labs(title = "Figure 2.2: **Heterosexual Females** are more vulnerable to sexual injustices.",
+       caption = "Source: The Online College Social Life Survey",
+       y = "Proportion of Orgasm Experience (%)") +
+  theme(panel.background = element_rect(fill = "white", color = "white"),
+        axis.title.x = element_blank(),
+        panel.grid.major.y = element_line(color = "grey80", linewidth = 0.5, linetype = "dashed"),
+        legend.title = element_blank(),
+        plot.caption  = element_text(hjust = 0.01, 
+                                     size  = 9,
+                                     margin=margin(t=0)),
+        axis.ticks = element_blank(),
+        plot.title = element_markdown(margin = margin(b = 20))) 
+```
+
+# Visualization 3
+
+## Figure 3 previous version
+
+```{r}
+#| label: create a contingency table for physattr and numpartners
+
+data$physattr <- as.factor(data$physattr)
+
+data$numpartners <- as.factor(data$numpartners)
+
+cont_table <- table(data$physattr, data$numpartners)
+print(cont_table)
+```
+
+```{r}
+#| label: run chi-square test for independence
+
+chi_square_result <- chisq.test(cont_table)
+print(chi_square_result)
+
+```
+
+```{r}
+#| label: Figure 3.1 plot the contingency table
+p3.1 <- mosaicplot(cont_table, 
+           main = "Contingency Table: Physical Attractiveness and Number of Partners")
+
+```
+
+```{r}
+#| label: Figure 3.2 on self-rated physical attractiveness and number of partners
+
+df_p3 <- as.data.frame(cont_table)
+
+df_p3 %>% 
+  ggplot(aes(x = Var1, y = Freq, fill = Var2)) +
+  geom_bar(
+    stat = "identity", 
+    position = "dodge", 
+    size = 1) +
+  labs(
+    title = "**Figure 3.2: Individuals with higher self-rated physical attractiveness \n tend to have larger numbers of partners**",
+    x = "Self-Rated Physcial Attractiveness",
+    y = "Counts",
+    caption = "Source: The Online College Social Life Survey (OCSLS)") +
+  theme(
+    plot.title = element_markdown(margin = margin(b = 20), hjust = 0),
+    panel.background = element_rect(fill = "white", color = "white"),
+    axis.title.y = element_markdown(size = 10,
+                                    vjust = 1.05,
+                                    angle = 360,
+                                    margin = margin(r = -80)),
+    panel.grid.major.y = element_line(color = "grey80", 
+                                      linewidth = 0.5,
+                                      linetype = "dashed"),
+    plot.caption       = element_text(hjust = 0.01, 
+                                      size  = 9,
+                                      margin=margin(t=0)),
+    axis.line.x = element_line(color = "black",
+                               linewidth = 0.5),
+    legend.position = "top"
+    ) +
+  # scale_fill_manual(values = c("#FF5733", "#33FF57", "#3357FF", "#FFFF33"))  
+  scale_y_continuous(
+    expand = c(0,0),
+    limits = c(0,2500)
+  ) + 
+  labs(fill = "Number of Partners") + 
+  scale_fill_discrete(name = "Number of Partners", 
+                      labels = c("0 partners", "1 partner", "2-3 partners", "4 or more partners")) 
+  
+```
+
+## Figure 3
+
+The above visualization has the same issue as the Figure 1 previous version -- the code works and produces a plot if put in the R console; however, when ran in the code trunk, it doesn't spit out a plot for me. Because of this, I have to save the output image for "Figure 3.2 previously" separately. just to ensure that it shows itself on my knitted document.
+
+Beyond that, I received my peers' suggestions to make the following attempts: a. try `facet_wrap()` by number of partners, see if it looks better and more clear. b. potentially calculate the mean of self-rated physical attractiveness (for different number of partners groups), then plot it.
+
+```{r}
+#| label: rename column names for p3 data frame for easier manipulation 
+
+df_p3 <- df_p3 %>% dplyr::rename(
+  physattr = Var1,
+  numpartners = Var2,
+  freq = Freq
+)
+```
+
+```{r}
+#| label: experiment with peer suggestion a).
+
+df_p3 %>% 
+  ggplot(aes(x = physattr, y = freq)) +
+  geom_bar(
+    stat = "identity", 
+    position = "dodge", 
+    size = 1) +
+  facet_wrap(~ numpartners)
+  labs(
+    title = "Figure 3.2: Individuals with higher self-rated physical attractiveness \n tend to have larger numbers of partners",
+    x = "Self-Rated Physcial Attractiveness",
+    y = "Counts",
+    caption = "Source: The Online College Social Life Survey (OCSLS)") +
+  theme(
+    plot.title = element_markdown(margin = margin(b = 20), hjust = 0),
+    panel.background = element_rect(fill = "white", color = "white"),
+    axis.title.y = element_markdown(size = 10,
+                                    vjust = 1.10,
+                                    angle = 360,
+                                    margin = margin(r = -80)),
+    panel.grid.major.y = element_line(color = "grey80", 
+                                      linewidth = 0.5,
+                                      linetype = "dashed"),
+    plot.caption       = element_text(hjust = 0.01, 
+                                      size  = 9,
+                                      margin=margin(t=0)),
+    axis.line.x = element_line(color = "black",
+                               linewidth = 0.5),
+    axis.ticks = element_blank(),
+    legend.position = "top"
+    ) +
+  # scale_fill_manual(values = c("#FF5733", "#33FF57", "#3357FF", "#FFFF33")) seems like only one of the two `scale_fill_xx()` can stay 
+  scale_y_continuous(
+    expand = c(0,0),
+    limits = c(0,2500)
+  ) + 
+  scale_fill_discrete(name = "Number of Partners", 
+                      labels = c("0 partners", "1 partner", "2-3 partners", "4 or more partners")) +
+  scale_fill_brewer(palette = "Dark2")
+  
+```
+
+Using `facet_wrap()` on number of partners does make the plot looks cleaner, but this makes comparison among the four different groups by number of partners harder to compare with each other. Say, if I want to compare the "0 partner" group and the "4 or more partners" group, I can tell their general trends with eyeballing, but to compare exact number of counts would be a fuss.
+
+```{r}
+df_p3 %>% 
+  ggplot(aes(x = physattr, y = freq, fill = numpartners)) +
+  geom_bar(
+    stat = "identity", 
+    position = "dodge", 
+    size = 1) +
+  labs(
+    title = "Figure 3.2: Individuals with higher self-rated physical attractiveness \n tend to have larger numbers of partners",
+    x = "Self-Rated Physcial Attractiveness",
+    y = "Counts",
+    caption = "Source: The Online College Social Life Survey (OCSLS)") +
+  theme(
+    plot.title = element_markdown(margin = margin(b = 20), hjust = 0),
+    panel.background = element_rect(fill = "white", color = "white"),
+    axis.title.y = element_markdown(size = 10,
+                                    vjust = 1.10,
+                                    angle = 360,
+                                    margin = margin(r = -80)),
+    panel.grid.major.y = element_line(color = "grey80", 
+                                      linewidth = 0.5,
+                                      linetype = "dashed"),
+    plot.caption       = element_text(hjust = 0.01, 
+                                      size  = 9,
+                                      margin=margin(t=0)),
+    axis.line.x = element_line(color = "black",
+                               linewidth = 0.5),
+    axis.ticks = element_blank(),
+    legend.position = "top"
+    ) +
+  # scale_fill_manual(values = c("#FF5733", "#33FF57", "#3357FF", "#FFFF33")) seems like only one of the two `scale_fill_xx()` can stay 
+  scale_y_continuous(
+    expand = c(0,0),
+    limits = c(0,2500)
+  ) + 
+  scale_fill_discrete(name = "Number of Partners", 
+                      labels = c("0 partners", "1 partner", "2-3 partners", "4 or more partners")) +
+  scale_fill_brewer(palette = "Dark2")
+  
+  
+```
+
+I like this version better than the original one. I made minor adjustments to spacing of texts, and changed the color scheme to be consistent as the second visualization, which should enhance the visual aesthetics on the web page, when scrolling down.
+
+From here, we can see that most people rate their physical attractiveness at the medium-to-medium high level, with most values clustering around 6 to 8. And there seems to be a correlation between physical attractiveness and number of partners -- as those with higher self-rated physical attractiveness seem to be more likely to have the higher number of partners. Seen from Figure 3.2, starting the group with a 7 point of self-rated physical attractiveness, the number of those who have had 4 or more sexual partners exceeds all the others. And this trend persists throughout the 8, 9, and 10 points of physical attractiveness.
+
+

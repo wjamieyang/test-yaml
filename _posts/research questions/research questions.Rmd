@@ -1,0 +1,27 @@
+---
+title: "Research Questions"
+description: |
+  The research questions are for the larger research project. Visualizations here serve as pilot navigation tools. 
+author:
+  - name: W. Jamie Yang
+    affiliation: University of Oregon
+date: 03-21-2024
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+
+# Learn more about creating blogs with Distill at:
+# https://rstudio.github.io/distill/blog.html
+
+```
+
+
+# Research Questions
+
+I aim to answer the following questions with this project: 
+a. Are there systemic inequalities of sexual enjoyment and orgasms? If so, how do the likelihoods of low sexual enjoyment and an absence of orgasms vary along the lines of social positionalities? 
+b. Do individual characteristics (such as physical attractiveness) and personal sexual lifestyle (i.e., number of sexual partners) predict one's experience with sexual pleasure?

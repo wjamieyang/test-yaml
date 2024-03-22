@@ -1,0 +1,41 @@
+---
+title: "Overview"
+description: |
+  This overview provides a general structure to the three data visualizations I produced and includes a codebook for the main variables I used. 
+author:
+  - name: W. Jamie Yang
+    affiliation: University of Oregon
+date: 03-21-2024
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+
+# Learn more about creating blogs with Distill at:
+# https://rstudio.github.io/distill/blog.html
+
+```
+
+
+
+# Overview
+
+Three data visualizations I produced for this post: 1. relationships: Correlogram showing correlation matrix of outcome variable and main independent variables 2. relationships: among qualitative variables, gender, race, sexual orientation, and noorgasm 3. relationships: self-rated physical attractiveness and number of partners, to see whether there exists an association between sexual lifestyle choice and physical appearance (proxies) --\> physical attractiveness takes 1-9 discrete integers, number of partners only contain "1", "2", "3", "4" four categories (categorical).
+
+Some other visualization ideas in store here for future work: barchart, grouped by race/SES, paired bars of gender; diverging bar chart; relationships: stratum ID () and noorgasm (binary variable, yes = 1, no = 0)
+
+## Context and Codebook
+
+I have done initial data cleaning and recoded variables of interest to serve my modeling purposes. I will examine two outcome variables: (1) "(no)orgasm" -- I constructed this variable from the binary variable "you.had.an.oragsm" which included experience of orgasms with partners of all genders. The Online College Social Life Survey (OCSLS) asks for up to the point when respondents take the survey, whether they have experienced sexual orgasms with a partner; (2) "enjoyment", from the survey question "How much did you enjoy {your date/the hookup/the most recent sexual event within your relationship} overall?". Respondents report on a scale of enjoyment from "not at all", to "very little", "somewhat", and "very much".
+
+For this project, I only look at the "(no)orgasm" variable. I want to visualize which subgroups of college population are more subject to one form of sexual injustices -- "lack of sexual orgasms in all college sexual encounters".
+
+**Outcome variable** "Never orgasm" is constructed from the binary variable "you.had.an.orgasm". It included experience of orgasms with partners of all genders.
+
+**Independent variables** Intersectional Strata and Social Context: Gender identities that are included in this analysis are male, female, genderqueer, and transgender (both FTM and MTF). Race/Ethnicity identities included are Hispanic or Latinx (all ethnicities), Black or African American, Asian and American Indian (AIAN), and White. Sexual orientation identities included are straight, gay, bisexual, and unsure. The "unsure" option is meaningful and shouldn't be omitted because the questioning itself speaks to some doubts towards the binary gender structure. Mom's education is the proxy I use for the respondents' socioeconomic background. Given the respondents are college students who don't have regular income, mom's education gives us information about the respondent's upbringing and general material condition.
+
+Number of partners: "How many people have you had intercourse with?" 1 - 0 partners 2 - 1 partner 3 - 2-3 partners 4 - 4 or more partners Physical attractiveness: "How would you rate your physical attractiveness? -- 1 = Very unattractive, 10 = Very attractive."
+

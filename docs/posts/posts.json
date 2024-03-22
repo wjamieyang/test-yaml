@@ -1,0 +1,87 @@
+[
+  {
+    "path": "posts/data description/",
+    "title": "Data Description",
+    "description": "Here I introduce the data source I used to create the visualizations for this project.",
+    "author": [
+      {
+        "name": "W. Jamie Yang",
+        "url": {}
+      }
+    ],
+    "date": "2024-03-21",
+    "categories": [],
+    "contents": "\nDescription of Data and Source\nFor this data visualization project, I use the anonymous, secondary data from the 2010 Online College Social Life Survey (OCSLS). I have already obtained IRB exemption from University of Oregon Research Compliance Services (Study ID: STUDY00000707). This data set is publicly available and can be accessed here.\nThe OCSLS is a national survey of college student sexual attitudes and sexual histories collected from twenty-one colleges and universities in the United States between 2005 and 2011 (N = 24298). It is one of the largest and most recent data sets that captures college students’ self-reported sexual histories. The survey took the form of a 15 to 20 minute self-administered questionnaire in sociology elective classes across the United States. Though not derived from a probability sample, OCSLS results from nearly full-population responses from the classes in which the recruitment took place.\nOCSLS is a great data source for my project because it contains comprehensive data on sexual behaviors and sexual experience for the US college population, which helps answer my research questions. (A new version of the survey, which started in 2018, is currently in the field and can potentially become available anytime now. If new data become available before I conclude my project, I will incorporate them into my analysis.)\n\n\n\n",
+    "preview": {},
+    "last_modified": "2024-03-21T21:45:26-07:00",
+    "input_file": {}
+  },
+  {
+    "path": "posts/overview/",
+    "title": "Overview",
+    "description": "This overview provides a general structure to the three data visualizations I produced and includes a codebook for the main variables I used.",
+    "author": [
+      {
+        "name": "W. Jamie Yang",
+        "url": {}
+      }
+    ],
+    "date": "2024-03-21",
+    "categories": [],
+    "contents": "\nOverview\nThree data visualizations I produced for this post: 1. relationships: Correlogram showing correlation matrix of outcome variable and main independent variables 2. relationships: among qualitative variables, gender, race, sexual orientation, and noorgasm 3. relationships: self-rated physical attractiveness and number of partners, to see whether there exists an association between sexual lifestyle choice and physical appearance (proxies) –> physical attractiveness takes 1-9 discrete integers, number of partners only contain “1”, “2”, “3”, “4” four categories (categorical).\nSome other visualization ideas in store here for future work: barchart, grouped by race/SES, paired bars of gender; diverging bar chart; relationships: stratum ID () and noorgasm (binary variable, yes = 1, no = 0)\nContext and Codebook\nI have done initial data cleaning and recoded variables of interest to serve my modeling purposes. I will examine two outcome variables: (1) “(no)orgasm” – I constructed this variable from the binary variable “you.had.an.oragsm” which included experience of orgasms with partners of all genders. The Online College Social Life Survey (OCSLS) asks for up to the point when respondents take the survey, whether they have experienced sexual orgasms with a partner; (2) “enjoyment”, from the survey question “How much did you enjoy {your date/the hookup/the most recent sexual event within your relationship} overall?”. Respondents report on a scale of enjoyment from “not at all”, to “very little”, “somewhat”, and “very much”.\nFor this project, I only look at the “(no)orgasm” variable. I want to visualize which subgroups of college population are more subject to one form of sexual injustices – “lack of sexual orgasms in all college sexual encounters”.\nOutcome variable “Never orgasm” is constructed from the binary variable “you.had.an.orgasm”. It included experience of orgasms with partners of all genders.\nIndependent variables Intersectional Strata and Social Context: Gender identities that are included in this analysis are male, female, genderqueer, and transgender (both FTM and MTF). Race/Ethnicity identities included are Hispanic or Latinx (all ethnicities), Black or African American, Asian and American Indian (AIAN), and White. Sexual orientation identities included are straight, gay, bisexual, and unsure. The “unsure” option is meaningful and shouldn’t be omitted because the questioning itself speaks to some doubts towards the binary gender structure. Mom’s education is the proxy I use for the respondents’ socioeconomic background. Given the respondents are college students who don’t have regular income, mom’s education gives us information about the respondent’s upbringing and general material condition.\nNumber of partners: “How many people have you had intercourse with?” 1 - 0 partners 2 - 1 partner 3 - 2-3 partners 4 - 4 or more partners Physical attractiveness: “How would you rate your physical attractiveness? – 1 = Very unattractive, 10 = Very attractive.”\n\n\n\n",
+    "preview": {},
+    "last_modified": "2024-03-21T21:49:11-07:00",
+    "input_file": {}
+  },
+  {
+    "path": "posts/research questions/",
+    "title": "Research Questions",
+    "description": "The research questions are for the larger research project. Visualizations here serve as pilot navigation tools.",
+    "author": [
+      {
+        "name": "W. Jamie Yang",
+        "url": {}
+      }
+    ],
+    "date": "2024-03-21",
+    "categories": [],
+    "contents": "\nResearch Questions\nI aim to answer the following questions with this project:\na. Are there systemic inequalities of sexual enjoyment and orgasms? If so, how do the likelihoods of low sexual enjoyment and an absence of orgasms vary along the lines of social positionalities?\nb. Do individual characteristics (such as physical attractiveness) and personal sexual lifestyle (i.e., number of sexual partners) predict one’s experience with sexual pleasure?\n\n\n\n",
+    "preview": {},
+    "last_modified": "2024-03-21T21:47:37-07:00",
+    "input_file": {}
+  },
+  {
+    "path": "posts/visualizations/",
+    "title": "Visualizations",
+    "description": "I made three data visualizations and documented the evolution of them here.",
+    "author": [
+      {
+        "name": "W. Jamie Yang",
+        "url": {}
+      }
+    ],
+    "date": "2024-03-21",
+    "categories": [],
+    "contents": "\nImport data\n\n\n\n\n\n\n\n\n\n\n\n\nVisualization 1\nFigure 1 previously\n\n\n\n\n                          gender        race4 sexual_orientation\ngender               1.000000000 -0.002922993        0.025284229\nrace4               -0.002922993  1.000000000        0.014426660\nsexual_orientation   0.025284229  0.014426660        1.000000000\nmothers_education_r  0.041349495  0.195034126       -0.003369028\nnoorgasm             0.085792719  0.157601047       -0.023205377\n                    mothers_education_r     noorgasm\ngender                      0.041349495  0.085792719\nrace4                       0.195034126  0.157601047\nsexual_orientation         -0.003369028 -0.023205377\nmothers_education_r         1.000000000  0.007288288\nnoorgasm                    0.007288288  1.000000000\n\n\n\n\nSomehow the above code chunk can run but sometimes it doesn’t spit out a plot product below the code chunk like usual and doesn’t show when I knit the document into a html file. However, from this initial plot, we can see that there exist correlation between these dyads: (1) the race variable and mothers’ education (r = 0.2); (2) the race variable and noorgasm (r = 0.16); (3) gender and noorgasm (r = 0.09). This plot meaningfully guides us to further investigate the relationships between gender/race and the outcome variable “noorgasm”.\nFigure 1\nI received feedback from the class that because my variables of interest are all qualitative variables, therefore, it’s inappropriate to use Pearson’s correlation coefficient. Instead, I should calculate chi-square and Cramer’s V, which is a similar concept but is for categorical variables. I proceed to make a similar heatmap using Cramer’s V.\nThis is the source I used to achieve this step.\n\n\n\n\n'data.frame':   22543 obs. of  5 variables:\n $ gender             : chr  \"Male\" \"Female\" \"Female\" \"Male\" ...\n  ..- attr(*, \"label\")= chr \"gender\"\n  ..- attr(*, \"format.stata\")= chr \"%6s\"\n $ race4              : chr  \"White\" \"White\" \"White\" \"White\" ...\n $ sexual_orientation : chr  \"Straight\" \"Straight\" \"Straight\" \"Straight\" ...\n  ..- attr(*, \"label\")= chr \"sexual.orientation\"\n  ..- attr(*, \"format.stata\")= chr \"%8s\"\n $ mothers_education_r: chr  \"Bachelors degree\" \"Bachelors degree\" \"Some college\" \"Some college\" ...\n  ..- attr(*, \"label\")= chr \"mothers.education.r\"\n  ..- attr(*, \"format.stata\")= chr \"%19s\"\n $ noorgasm           : num  0 0 0 0 1 1 0 0 0 1 ...\n  ..- attr(*, \"format.stata\")= chr \"%9.0g\"\n - attr(*, \"label\")= chr \"files.nyu.edu/jmb736/hookups.codebook, \\\"students\\\" file.\\n\\tpe22 or jmb736 @nyu.edu\"\n\n\n\n\n\n             Variable1           Variable2 Cramers_V\n1               gender               race4      0.02\n2               gender  sexual_orientation      0.04\n3               gender mothers_education_r      0.02\n4               gender            noorgasm      0.09\n5                race4              gender      0.02\n6                race4  sexual_orientation      0.01\n7                race4 mothers_education_r      0.10\n8                race4            noorgasm      0.17\n9   sexual_orientation              gender      0.04\n10  sexual_orientation               race4      0.01\n11  sexual_orientation mothers_education_r      0.01\n12  sexual_orientation            noorgasm      0.06\n13 mothers_education_r              gender      0.02\n14 mothers_education_r               race4      0.10\n15 mothers_education_r  sexual_orientation      0.01\n16 mothers_education_r            noorgasm      0.03\n17            noorgasm              gender      0.09\n18            noorgasm               race4      0.17\n19            noorgasm  sexual_orientation      0.06\n20            noorgasm mothers_education_r      0.03\n\n\n\n\nVisualization 2\nFigure 2 previously\n\n\n\n\n\n\nI have difficulty using geom_mosaic() from ggplot2 package to create this mosaic plot; and using the vcd package, I have not figured out how to adjust title text size – I tried moving to ggplot2 from here to edit the text size, but keep getting a “NULL” response.\nFigure 2\nAfter seeing the clunkiness of the vcd package and taking feedback from classmates, I decided to try using ggplot2 to produce stacked bar charts, instead of the mosaic plots here. I have more confidence making maneuvers in the ggplot2 universe after this term’s training and practice.\n\n\n\nInspired by Figure 1, which also substantiates the literature (suggesting that ) I firstly want to check the distribution of respondents who have never experienced orgasm in their college sexual encounters in various race and gender groups. Figure 2.1 tells a clearer story about which racial and gender subgroups stand out.\n\n\n\nVisualization 3\nFigure 3 previous version\n\n    \n        1    2    3    4\n  1    37   13    9   29\n  2    48   24   20   27\n  3   154   62   58   96\n  4   258  108   83  109\n  5   853  398  347  383\n  6  1129  696  579  770\n  7  1977 1557 1560 2370\n  8  1298 1219 1338 2491\n  9   236  278  298  674\n  10  187  129  176  398\n\n\n\n    Pearson's Chi-squared test\n\ndata:  cont_table\nX-squared = 1041.3, df = 27, p-value < 2.2e-16\n\n\n\n\n\n\n\nFigure 3\nThe above visualization has the same issue as the Figure 1 previous version – the code works and produces a plot if put in the R console; however, when ran in the code trunk, it doesn’t spit out a plot for me. Because of this, I have to save the output image for “Figure 3.2 previously” separately. just to ensure that it shows itself on my knitted document.\nBeyond that, I received my peers’ suggestions to make the following attempts: a. try facet_wrap() by number of partners, see if it looks better and more clear. b. potentially calculate the mean of self-rated physical attractiveness (for different number of partners groups), then plot it.\n\n\n\n\n\nNULL\n\nUsing facet_wrap() on number of partners does make the plot looks cleaner, but this makes comparison among the four different groups by number of partners harder to compare with each other. Say, if I want to compare the “0 partner” group and the “4 or more partners” group, I can tell their general trends with eyeballing, but to compare exact number of counts would be a fuss.\n\n\n\nI like this version better than the original one. I made minor adjustments to spacing of texts, and changed the color scheme to be consistent as the second visualization, which should enhance the visual aesthetics on the web page, when scrolling down.\nFrom here, we can see that most people rate their physical attractiveness at the medium-to-medium high level, with most values clustering around 6 to 8. And there seems to be a correlation between physical attractiveness and number of partners – as those with higher self-rated physical attractiveness seem to be more likely to have the higher number of partners. Seen from Figure 3.2, starting the group with a 7 point of self-rated physical attractiveness, the number of those who have had 4 or more sexual partners exceeds all the others. And this trend persists throughout the 8, 9, and 10 points of physical attractiveness.\n\n\n\n",
+    "preview": {},
+    "last_modified": "2024-03-21T21:50:59-07:00",
+    "input_file": {}
+  },
+  {
+    "path": "posts/welcome/",
+    "title": "Welcome to My Blog",
+    "description": "Welcome to my new blog, Pleasure Inequalities and Social Patternings. I hope you enjoy reading what I have to say!",
+    "author": [
+      {
+        "name": "W. Jamie Yang",
+        "url": {}
+      }
+    ],
+    "date": "2024-03-21",
+    "categories": [],
+    "contents": "\n\n\n\n",
+    "preview": {},
+    "last_modified": "2024-03-21T21:42:37-07:00",
+    "input_file": {}
+  }
+]

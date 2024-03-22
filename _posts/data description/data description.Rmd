@@ -1,0 +1,29 @@
+---
+title: "Data Description"
+description: |
+  Here I introduce the data source I used to create the visualizations for this project. 
+author:
+  - name: W. Jamie Yang
+    affiliation: University of Oregon
+date: 03-21-2024
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+
+# Learn more about creating blogs with Distill at:
+# https://rstudio.github.io/distill/blog.html
+
+```
+
+
+# Description of Data and Source
+
+For this data visualization project, I use the anonymous, secondary data from the 2010 Online College Social Life Survey (OCSLS). I have already obtained IRB exemption from University of Oregon Research Compliance Services (Study ID: STUDY00000707). This data set is publicly available and can be accessed [here](https://pages.nyu.edu/ocsls/2010/).
+
+The OCSLS is a national survey of college student sexual attitudes and sexual histories collected from twenty-one colleges and universities in the United States between 2005 and 2011 (N = 24298). It is one of the largest and most recent data sets that captures college students' self-reported sexual histories. The survey took the form of a 15 to 20 minute self-administered questionnaire in sociology elective classes across the United States. Though not derived from a probability sample, OCSLS results from nearly full-population responses from the classes in which the recruitment took place.
+
+OCSLS is a great data source for my project because it contains comprehensive data on sexual behaviors and sexual experience for the US college population, which helps answer my research questions. (A new version of the survey, which started in 2018, is currently in the field and can potentially become available anytime now. If new data become available before I conclude my project, I will incorporate them into my analysis.)
